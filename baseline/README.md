@@ -16,6 +16,7 @@ The provided baseline is based on our previous work, [**UniUSNet: A Promptable F
   - [1. Clone Repository](#1-clone-repository)
   - [2. Create Environment](#2-create-environment)
   - [3. Prepare Datasets](#3-prepare-datasets)
+  - [4. Download Pre-trained Weights (Optional)](#4-download-pre-trained-weights-optional)
 - [🏋️‍♀️ Model Training](#️-model-training)
 - [🧪 Inference and Evaluation](#-inference-and-evaluation)
 - [📦 Preparing Your Submission](#-preparing-your-submission)
@@ -38,7 +39,7 @@ Follow these steps to set up your environment and run the baseline model.
 ### 1. Clone Repository
 
 ```bash
-git https://github.com/uusic2025/challenge.git
+git clone https://github.com/uusic2025/challenge.git
 cd challenge
 ```
 
@@ -85,7 +86,18 @@ The data structure is crucial for the data loaders to work correctly.
 
     ```bash
     python datasets/generate_txt.py
-    ```    This script will scan the `data/` directory, split the files into 70% training, 20% validation, and 10% testing sets, and write the file paths into the corresponding `.txt` files.
+    ```
+    This script will scan the `data/` directory, split the files into 70% training, 20% validation, and 10% testing sets, and write the file paths into the corresponding `.txt` files.
+
+### 4. Download Pre-trained Weights (Optional)
+
+To help you get started quickly or if you want to **skip the training step** and jump directly to inference, we provide the pre-trained weights for our baseline model.
+
+1.  **[⬇️ Download the `best_model.pth` from our official GitHub Releases page](https://github.com/uusic2025/challenge/releases/latest)**.
+2.  Create a directory for your experiment, for example: `mkdir -p exp_out/trial_1`.
+3.  Place the downloaded `best_model.pth` file into this directory: `exp_out/trial_1/best_model.pth`.
+
+Now you can proceed directly to the [Inference and Evaluation](#-inference-and-evaluation) section using this model.
 
 ## 🏋️‍♀️ Model Training
 
@@ -139,7 +151,7 @@ python -m torch.distributed.launch \
 ```
 
 **Key Arguments**:
-- `--output_dir`: This should be the *same directory as your training output*, as the script looks for `best_model.pth` here.
+- `--output_dir`: This should be the *same directory as your training output* (where `best_model.pth` is saved) or the directory where you placed the pre-trained weights.
 - `--prompt`: Must be consistent with the training setting.
 - `--is_saveout`: If specified, the script will save predicted masks and ground truths as images in `<output_dir>/predictions/`, which is useful for visual inspection.
 
