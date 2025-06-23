@@ -38,8 +38,8 @@ Follow these steps to set up your environment and run the baseline model.
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-repo-link.git  # <-- Replace with your repo link
-cd your-repo-link
+git https://github.com/uusic2025/challenge.git
+cd challenge
 ```
 
 ### 2. Create Environment
