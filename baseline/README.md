@@ -24,6 +24,13 @@ The provided baseline is based on our previous work, [**UniUSNet: A Promptable F
 - [❓ Frequently Asked Questions (FAQ)](#-frequently-asked-questions-faq)
 - [©️ Citation](#️-citation)
 
+
+
+## 💬 Got a Question or Found a Bug?
+
+We highly encourage you to **[open an issue on our GitHub repository](https://github.com/uusic2025/challenge/issues)** for any questions or problems you encounter. This is the best way to get help, as it allows the entire community to benefit from the discussion and solutions.
+
+
 ## 🎯 About the Challenge
 
 The UUSIC25 challenge aims to spur the development of universal models for ultrasound image analysis. Ultrasound imaging is a cornerstone of biomedical diagnostics, but creating models that perform accurate classification and segmentation across diverse organs and pathologies remains a significant hurdle.
@@ -31,6 +38,8 @@ The UUSIC25 challenge aims to spur the development of universal models for ultra
 This challenge encourages participants to develop innovative algorithms that can handle multiple tasks (classification and segmentation) on a wide range of ultrasound images from 7 different organs. Our goal is to push the boundaries of model generalization, efficiency, and clinical applicability.
 
 This baseline provides a strong starting point, featuring a prompt-based multi-task architecture using a Swin Transformer backbone.
+
+
 
 ## 🚀 Getting Started
 
@@ -78,9 +87,42 @@ Pillow
 
 The data structure is crucial for the data loaders to work correctly.
 
-1.  **Place Data**: Unzip and place the challenge datasets into the `data/` directory. The expected structure is shown in the [File Structure](#-file-structure) section.
-    -   Classification images go into `data/classification/<DatasetName>/<class_id>/`.
-    -   Segmentation images go into `data/segmentation/<DatasetName>/imgs/` and their corresponding masks into `data/segmentation/<DatasetName>/masks/`.
+1.  **Organize Data**: The data structure is crucial for the data loaders to work correctly, especially for aligning data with the one-hot encoders used in training. Please follow these steps carefully:
+    1.  Inside the project folder, create a new directory named `data`.
+    2.  **Unzip Public Data**: Unzip `Challenge_Data_Public.zip`. This will give you `classification` and `segmentation` folders. Place both of them inside your new `data` directory.
+    3.  **Unzip Private Data**: Unzip `Challenge_Data_Private_v2_fully_anonymized.zip`. You will find `Train` and `Val` folders inside.
+    4.  **Merge and Prefix Training Data**:
+        -   Go into the private `Train` folder. It also contains `classification` and `segmentation` subfolders.
+        -   For each dataset subfolder that came from this private `Train` data, you must **add the prefix `private_` to its name** (e.g., `Breast` becomes `private_Breast`, `Liver` becomes `private_Liver`). This step is critical for the code to work correctly.
+        -   Merge these renamed private training folders with their public counterparts in `data/classification` and `data/segmentation`.
+    5.  **Place Validation Data & JSON files**:
+        -   Move the entire `Val` folder from the private zip directly into your `data` directory.
+        -   Finally, place all `.json` ground truth files from both zips directly into the root of the `data` directory.
+
+    Your final `data` directory structure should look similar to this:
+
+    ```
+    data/
+    ├── classification
+    │   ├── Appendix
+    │   ├── BUS-BRA
+    │   ... (other public datasets)
+    │   ├── private_Appendix
+    │   ├── private_Breast
+    │   └── ... (other prefixed private datasets)
+    ├── segmentation
+    │   ├── BUS-BRA
+    │   ... (other public datasets)
+    │   ├── private_Breast
+    │   └── ... (other prefixed private datasets)
+    ├── Val
+    │   ├── classification
+    │   └── segmentation
+    ├── private_test_for_participants.json
+    ├── private_train_ground_truth.json
+    ├── private_val_for_participants.json
+    └── public_all_ground_truth.json
+    ```
 
 2.  **Generate File Lists**: After organizing the data, you need to generate `train.txt`, `val.txt`, and `test.txt` for each dataset. We provide a script to do this automatically.
 
@@ -91,11 +133,12 @@ The data structure is crucial for the data loaders to work correctly.
 
 ### 4. Download Pre-trained Weights (Optional)
 
-To help you get started quickly or if you want to **skip the training step** and jump directly to inference, we provide the pre-trained weights for our baseline model.
+To get started quickly or if you want to **skip the training step** and jump directly to inference, you can use our provided baseline weights.
 
-1.  **[⬇️ Download the `best_model.pth` from our official GitHub Releases page](https://github.com/uusic2025/challenge/releases/latest)**.
-2.  Create a directory for your experiment, for example: `mkdir -p exp_out/trial_1`.
-3.  Place the downloaded `best_model.pth` file into this directory: `exp_out/trial_1/best_model.pth`.
+1.  **Download Model Weights**: Go to our official [**GitHub Releases page**](https://github.com/uusic2025/challenge/releases/latest) and download the `baseline.pth` file.
+2.  **Prepare Experiment Directory**: Create a directory for your experiment output: `mkdir -p exp_out/trial_1`.
+3.  **Place and Rename Weights**: Move the downloaded `baseline.pth` file into this folder and **rename it to `best_model.pth`**. The testing script `omni_test.py` is configured to load the model from `exp_out/trial_1/best_model.pth`.
+4.  **(Recommended) Prepare Backbone Checkpoint**: The code may try to load a pre-trained Swin Transformer backbone. To prevent potential errors during initialization, create a `pretrained_ckpt` folder in the project root and place the `swin_tiny_patch4_window7_224.pth` file inside it. You can download this from the official Swin Transformer repository. This step is only for initializing the encoder's weights and is separate from loading our fine-tuned `best_model.pth`.
 
 Now you can proceed directly to the [Inference and Evaluation](#-inference-and-evaluation) section using this model.
 
